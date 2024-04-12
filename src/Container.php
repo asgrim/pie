@@ -16,6 +16,7 @@ use GuzzleHttp\Client;
 use Illuminate\Container\Container as IlluminateContainer;
 use Php\Pie\Command\DownloadCommand;
 use Php\Pie\DependencyResolver\DependencyResolver;
+use Php\Pie\DependencyResolver\PieComposerFactory;
 use Php\Pie\DependencyResolver\ResolveDependencyWithComposer;
 use Php\Pie\Downloading\DownloadAndExtract;
 use Php\Pie\Downloading\DownloadZip;
@@ -49,7 +50,16 @@ final class Container
         });
         $container->singleton(Composer::class, static function (ContainerInterface $container): Composer {
             $io       = $container->get(IOInterface::class);
-            $composer = (new ComposerFactory())->createComposer($io, [], true);
+            $composer = (new PieComposerFactory())->createComposer(
+                $io,
+                [
+                    'config' => [
+                        'lock' => false,
+                        'vendor-dir' => \Php\Pie\Platform::getPieWorkingDirectory(),
+                    ],
+                ],
+                true
+            );
             $io->loadConfiguration($composer->getConfig());
 
             return $composer;
@@ -63,6 +73,8 @@ final class Container
                 $repositorySet->addRepository(new CompositeRepository($composer->getRepositoryManager()->getRepositories()));
 
                 return new ResolveDependencyWithComposer(
+                    $container->get(IOInterface::class),
+                    $composer,
                     $repositorySet,
                     new ResolveTargetPhpToPlatformRepository(),
                 );
