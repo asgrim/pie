@@ -44,18 +44,12 @@ final class UnixBuild implements Build
             $configureOptions[] = '--with-php-config=' . $phpConfigPath;
         }
 
-        $configureOutput = $this->configure($downloadedPackage, $configureOptions);
-        if ($output->isVeryVerbose()) {
-            $output->writeln($configureOutput);
-        }
+        $configureOutput = $this->configure($downloadedPackage, $configureOptions, $output);
 
         $optionsOutput = count($configureOptions) ? ' with options: ' . implode(' ', $configureOptions) : '.';
         $output->writeln('<info>Configure complete</info>' . $optionsOutput);
 
         $makeOutput = $this->make($targetPlatform, $downloadedPackage, $output);
-        if ($output->isVeryVerbose()) {
-            $output->writeln($makeOutput);
-        }
 
         $expectedSoFile = $downloadedPackage->extractedSourcePath . '/modules/' . $downloadedPackage->package->extensionName->name() . '.so';
 
@@ -84,12 +78,13 @@ final class UnixBuild implements Build
     }
 
     /** @param list<non-empty-string> $configureOptions */
-    private function configure(DownloadedPackage $downloadedPackage, array $configureOptions = []): string
+    private function configure(DownloadedPackage $downloadedPackage, array $configureOptions = [], OutputInterface $output): string
     {
         return Process::run(
             ['./configure', ...$configureOptions],
             $downloadedPackage->extractedSourcePath,
             self::CONFIGURE_TIMEOUT_SECS,
+            $output->isVeryVerbose() ? $output : null,
         );
     }
 
@@ -108,6 +103,7 @@ final class UnixBuild implements Build
             $makeCommand,
             $downloadedPackage->extractedSourcePath,
             self::MAKE_TIMEOUT_SECS,
+            $output->isVeryVerbose() ? $output : null,
         );
     }
 }

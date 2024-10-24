@@ -6,6 +6,7 @@ namespace Php\Pie\Util;
 
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process as SymfonyProcess;
+use Symfony\Component\Console\Output\OutputInterface;
 
 use function trim;
 
@@ -29,8 +30,22 @@ final class Process
      *
      * @throws ProcessFailedException
      */
-    public static function run(array $command, string|null $workingDirectory = null, int|null $timeout = 5): string
+    public static function run(array $command, string|null $workingDirectory = null, int|null $timeout = 5, ?OutputInterface $output = null): string
     {
+        if ($output instanceof OutputInterface) {
+            $process = new SymfonyProcess($command, $workingDirectory, timeout: $timeout);
+            $process->start();
+
+            $iterator = $process->getIterator();
+            foreach ($iterator as $data) {
+                $output->write($data);
+            }
+			// executes after the command finishes
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
+            }
+            return '';
+        }
         return trim((new SymfonyProcess($command, $workingDirectory, timeout: $timeout))
             ->mustRun()
             ->getOutput());
