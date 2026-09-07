@@ -9,7 +9,6 @@ use Php\Pie\File\BinaryFile;
 use Php\Pie\SelfManage\Update\FetchPieRelease;
 use Php\Pie\SelfManage\Update\ReleaseMetadata;
 use Symfony\Component\Process\ExecutableFinder;
-use ThePhpFoundation\Attestation\Verification\VerifyAttestationWithOpenSsl;
 
 use function extension_loaded;
 
@@ -26,7 +25,7 @@ final class VerifyPieReleaseUsingAttestation implements VerifyPiePhar
     {
         return new VerifyPieReleaseUsingAttestation(
             new GithubCliAttestationVerification(new ExecutableFinder(), $fetchPieRelease),
-            new FallbackVerificationUsingOpenSsl(VerifyAttestationWithOpenSsl::factory(), $fetchPieRelease),
+            new FallbackVerificationUsingOpenSsl($fetchPieRelease),
         );
     }
 
