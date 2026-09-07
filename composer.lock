@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f1906c1e84a2f711ef071de36ed7d53c",
+    "content-hash": "abb3575cc3bca7039e1ee57d4ca44622",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -2650,23 +2650,24 @@
         },
         {
             "name": "thephpf/attestation",
-            "version": "0.0.7",
+            "version": "dev-sigstore-conformance",
             "source": {
                 "type": "git",
-                "url": "https://github.com/ThePHPF/attestation.git",
-                "reference": "c603fd7d41a44505f7bc67b8c687a7a65aef992a"
+                "url": "https://github.com/asgrim/attestation.git",
+                "reference": "506874f9f35cdc7219b2be887e38102963a4320b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ThePHPF/attestation/zipball/c603fd7d41a44505f7bc67b8c687a7a65aef992a",
-                "reference": "c603fd7d41a44505f7bc67b8c687a7a65aef992a",
+                "url": "https://api.github.com/repos/asgrim/attestation/zipball/506874f9f35cdc7219b2be887e38102963a4320b",
+                "reference": "506874f9f35cdc7219b2be887e38102963a4320b",
                 "shasum": ""
             },
             "require": {
                 "composer/composer": "^2.2",
                 "ext-json": "*",
-                "php": "^7.4||^8.0",
-                "webmozart/assert": "^1.11"
+                "php": "^8.0",
+                "symfony/console": "^5.4 || ^6.0 || ^7.0 || ^8.0",
+                "webmozart/assert": "^1.11 || ^2.0"
             },
             "require-dev": {
                 "doctrine/coding-standard": "^13.0 || ^14.0",
@@ -2675,19 +2676,30 @@
                 "phpunit/phpunit": "^9.6.25"
             },
             "suggest": {
+                "ext-bcmath": "Needed to verify message-signature bundles when only a digest, not the real artifact, is available (used if ext-gmp is not present)",
+                "ext-gmp": "Preferred over ext-bcmath for verifying message-signature bundles from a digest alone; consistently fast regardless of PHP version",
                 "ext-openssl": "Needed to verify certificates using OpenSSL",
-                "ext-snappy": "Decompress bundle attestations faster; if not, flow-php/snappy PHP fallback is used"
+                "ext-snappy": "Decompress bundle attestations faster; if not, flow-php/snappy PHP fallback is used",
+                "ext-sodium": "Needed to verify Ed25519 transparency log signatures"
             },
+            "bin": [
+                "bin/cli.php"
+            ],
             "type": "library",
             "autoload": {
-                "files": [
-                    "src/FlowSnappy/polyfill.php"
-                ],
                 "psr-4": {
                     "ThePhpFoundation\\Attestation\\": "src/"
+                },
+                "files": [
+                    "src/FlowSnappy/polyfill.php"
+                ]
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "ThePhpFoundation\\UnitTest\\Attestation\\": "test/unit",
+                    "ThePhpFoundation\\IntegrationTest\\Attestation\\": "test/integration"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -2699,20 +2711,10 @@
             ],
             "description": "A PHP library to aid in verifying artifact attestations",
             "support": {
-                "issues": "https://github.com/ThePHPF/attestation/issues",
-                "source": "https://github.com/ThePHPF/attestation/tree/0.0.7"
+                "source": "https://github.com/asgrim/attestation/tree/sigstore-conformance",
+                "issues": "https://github.com/asgrim/attestation/issues"
             },
-            "funding": [
-                {
-                    "url": "https://github.com/ThePHPF",
-                    "type": "github"
-                },
-                {
-                    "url": "https://opencollective.com/phpfoundation",
-                    "type": "open_collective"
-                }
-            ],
-            "time": "2026-07-20T18:42:42+00:00"
+            "time": "2026-09-04T07:20:52+00:00"
         },
         {
             "name": "webmozart/assert",
@@ -6178,7 +6180,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "thephpf/attestation": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
