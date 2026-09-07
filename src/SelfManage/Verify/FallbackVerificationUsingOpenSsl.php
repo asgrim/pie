@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace Php\Pie\SelfManage\Verify;
 
+use Composer\Config;
 use Composer\Downloader\TransportException;
 use Composer\IO\IOInterface;
+use Composer\Util\HttpDownloader;
+use Php\Pie\ComposerIntegration\QuieterConsoleIO;
 use Php\Pie\File\BinaryFile;
 use Php\Pie\SelfManage\Update\FetchPieRelease;
 use Php\Pie\SelfManage\Update\ReleaseMetadata;
 use Php\Pie\Util\Emoji;
+use ThePhpFoundation\Attestation\BundleSource\BundleSource;
 use ThePhpFoundation\Attestation\BundleSource\DownloadGitHubBundle;
 use ThePhpFoundation\Attestation\FilenameWithChecksum;
 use ThePhpFoundation\Attestation\FulcioSigstoreOidExtensions;
@@ -32,8 +36,19 @@ final class FallbackVerificationUsingOpenSsl implements VerifyPiePhar
 
     private const ORGANISATION = 'php';
 
-    public function __construct(private readonly FetchPieRelease $fetchPieRelease)
+    public function __construct(
+        private readonly FetchPieRelease $fetchPieRelease,
+        private readonly BundleSource $bundleSource,
+    ) {
+    }
+
+    /** @param non-empty-string $githubApiBaseUrl */
+    public static function factory(FetchPieRelease $fetchPieRelease, QuieterConsoleIO $io, Config $config, string $githubApiBaseUrl): self
     {
+        return new self(
+            $fetchPieRelease,
+            new DownloadGitHubBundle(self::ORGANISATION, $githubApiBaseUrl, new HttpDownloader($io, $config)),
+        );
     }
 
     public function verify(ReleaseMetadata $releaseMetadata, BinaryFile $pharFilename, IOInterface $io): void
@@ -56,7 +71,7 @@ final class FallbackVerificationUsingOpenSsl implements VerifyPiePhar
 
         try {
             $file    = FilenameWithChecksum::fromFilenameAndChecksum($pharFilename->filePath, $pharFilename->checksum);
-            $bundles = DownloadGitHubBundle::factory(self::ORGANISATION)->getBundles($file);
+            $bundles = $this->bundleSource->getBundles($file);
 
             VerifyBundleWithOpenSsl::factory(
                 self::ATTESTATION_CERTIFICATE_EXPECTED_EXTENSION_VALUES,
