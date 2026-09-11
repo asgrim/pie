@@ -2654,12 +2654,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/asgrim/attestation.git",
-                "reference": "506874f9f35cdc7219b2be887e38102963a4320b"
+                "reference": "3902d680d1bd34a448edc69b55b407a3db9fc377"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/asgrim/attestation/zipball/506874f9f35cdc7219b2be887e38102963a4320b",
-                "reference": "506874f9f35cdc7219b2be887e38102963a4320b",
+                "url": "https://api.github.com/repos/asgrim/attestation/zipball/3902d680d1bd34a448edc69b55b407a3db9fc377",
+                "reference": "3902d680d1bd34a448edc69b55b407a3db9fc377",
                 "shasum": ""
             },
             "require": {
@@ -2714,7 +2714,7 @@
                 "source": "https://github.com/asgrim/attestation/tree/sigstore-conformance",
                 "issues": "https://github.com/asgrim/attestation/issues"
             },
-            "time": "2026-09-04T07:20:52+00:00"
+            "time": "2026-09-11T21:01:17+00:00"
         },
         {
             "name": "webmozart/assert",
